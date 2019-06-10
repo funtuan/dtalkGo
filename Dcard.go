@@ -26,3 +26,21 @@ func (d *Dcard) getJson(url string, target interface{}) error {
 func (d *Dcard) getPopularPosts(forumsName string, limit int, posts *[]Post) {
 	d.getJson("https://"+d.dns+"/_api/forums/"+forumsName+"/posts?popular=true&limit="+fmt.Sprintf("%d", limit), &posts)
 }
+
+func (d *Dcard) getPost(post *Post) {
+	d.getJson("https://"+d.dns+"/_api/posts/"+fmt.Sprintf("%d", post.ID), &post)
+}
+
+func (d *Dcard) getPostComment(post *Post) {
+	floor := 0
+	comments := []Comment{}
+
+	d.getJson("https://"+d.dns+"/_api/posts/"+fmt.Sprintf("%d", post.ID)+"/comments?after="+fmt.Sprintf("%d", floor), &comments)
+	for len(comments) > 0 {
+		for _, comment := range comments {
+			floor = comment.Floor
+			post.setComment(comment)
+		}
+		d.getJson("https://"+d.dns+"/_api/posts/"+fmt.Sprintf("%d", post.ID)+"/comments?after="+fmt.Sprintf("%d", floor), &comments)
+	}
+}

@@ -10,7 +10,11 @@ func main() {
 	posts := []Post{}
 	dcard.getPopularPosts("food", 5, &posts)
 
-	for _, post := range posts {
-		fmt.Println(post)
-	}
+	posts[3].loadPost()
+	posts[3].loadComments()
+	fmt.Println(posts[3].Comments)
+
+	// for _, post := range posts {
+	// fmt.Println(post)
+	// }
 }
