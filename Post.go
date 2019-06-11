@@ -15,7 +15,7 @@ type Post struct {
 	ForumAlias     string
 	Gender         string
 	School         string
-	Comments       []Comment
+	Comments       map[int]Comment
 }
 
 type ContentRecord struct {
@@ -69,16 +69,22 @@ func (p *Post) loadPost() {
 
 func (p *Post) setComment(comment Comment) {
 	floor := comment.Floor
-	if len(p.Comments) >= floor {
-		comment.Records = p.Comments[floor-1].Records
-		p.Comments[floor-1] = comment
-		p.Comments[floor-1].addRecord(comment)
+
+	_, ok := p.Comments[floor]
+	if ok {
+		comment.Records = p.Comments[floor].Records
+		comment.addRecord(comment)
+		p.Comments[floor] = comment
 	} else {
 		comment.addRecord(comment)
-		p.Comments = append(p.Comments, comment)
+		p.Comments[floor] = comment
 	}
 }
 
 func (p *Post) loadComments() {
+	if len(p.Comments) == 0 {
+		p.Comments = make(map[int]Comment)
+	}
+
 	dcard.getPostComment(p)
 }
