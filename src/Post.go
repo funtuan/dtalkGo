@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"time"
 )
 
@@ -15,7 +16,7 @@ type Post struct {
 	ForumAlias     string
 	Gender         string
 	School         string
-	Comments       map[int]Comment
+	Comments       map[string]Comment
 }
 
 type ContentRecord struct {
@@ -68,22 +69,23 @@ func (p *Post) loadPost() {
 }
 
 func (p *Post) setComment(comment Comment) {
-	floor := comment.Floor
+	floorString := fmt.Sprintf("%d", comment.Floor)
+	fmt.Println(floorString)
 
-	_, ok := p.Comments[floor]
+	_, ok := p.Comments[floorString]
 	if ok {
-		comment.Records = p.Comments[floor].Records
+		comment.Records = p.Comments[floorString].Records
 		comment.addRecord(comment)
-		p.Comments[floor] = comment
+		p.Comments[floorString] = comment
 	} else {
 		comment.addRecord(comment)
-		p.Comments[floor] = comment
+		p.Comments[floorString] = comment
 	}
 }
 
 func (p *Post) loadComments() {
 	if len(p.Comments) == 0 {
-		p.Comments = make(map[int]Comment)
+		p.Comments = make(map[string]Comment)
 	}
 
 	dcard.getPostComment(p)
